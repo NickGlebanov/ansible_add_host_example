@@ -1,0 +1,29 @@
+---
+- name: Select node case
+  hosts: webservers
+
+  tasks:
+  - name: Cat file
+    ansible.builtin.shell:
+      cmd: cat /home/centos/testfile.txt
+    register: target_host
+  
+  - name: Echo
+    ansible.builtin.shell:
+      cmd: echo '{{ target_host.stdout }}'
+
+  - name: Add host to group 'target'
+    ansible.builtin.add_host:
+      name: '{{ target_host.stdout }}'
+      groups: target
+
+
+- name: Do something on target host
+  hosts: target
+
+  tasks:
+  - name: Echo interface
+    ansible.builtin.shell:
+      cmd: hostname
+    args:
+      executable: /bin/bash
